@@ -1,8 +1,48 @@
-query getFolderById($id: ID!, $profileId: ID!, $firstItems: Int, $itemsAfterCursor: String, $lastItems: Int, $itemsBeforeCursor: String, $thumbnailHeight: Int!, $channelLogoWidth: Int!, $channelLogoHeight: Int!, $channelLogoFlavour: ImageFlavour, $backgroundWidth: Int!, $backgroundHeight: Int!) {
-  contentFolder(id: $id) {
-    ...ContentFolderFragment
+query Search($input: String!, $keyword: String!, $context: SearchContext!, $filter: SearchFilter!, $profileId: ID!, $firstFolders: Int, $foldersAfterCursor: String, $firstItems: Int, $itemsAfterCursor: String, $lastItems: Int, $itemsBeforeCursor: String, $thumbnailHeight: Int!, $channelLogoWidth: Int!, $channelLogoHeight: Int!, $channelLogoFlavour: ImageFlavour) {
+  searchKeywords(input: $input, filter: $filter) {
+    ...cacheInfoFragment
+    items
     __typename
   }
+  search(keyword: $keyword, context: $context, filter: $filter) {
+    ...ContentFolderListFragment
+    __typename
+  }
+}
+
+fragment cacheInfoFragment on Cacheable {
+  __typename
+  id
+  expiry
+}
+
+fragment ContentFolderListFragment on ContentFolderList {
+  id
+  expiry
+  folders(first: $firstFolders, after: $foldersAfterCursor) {
+    pageInfo {
+      ...pageInfoFragment
+      __typename
+    }
+    edges {
+      cursor
+      node {
+        ...ContentFolderFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment pageInfoFragment on PageInfo {
+  hasNextPage
+  hasPreviousPage
+  startCursor
+  endCursor
+  __typename
 }
 
 fragment ContentFolderFragment on ContentFolder {
@@ -45,20 +85,6 @@ fragment ContentFolderFragment on ContentFolder {
   __typename
 }
 
-fragment cacheInfoFragment on Cacheable {
-  __typename
-  id
-  expiry
-}
-
-fragment pageInfoFragment on PageInfo {
-  hasNextPage
-  hasPreviousPage
-  startCursor
-  endCursor
-  __typename
-}
-
 fragment ContentItemFragment on ContentItem {
   ... on VODFolder {
     ...cacheInfoFragment
@@ -78,10 +104,6 @@ fragment ContentItemFragment on ContentItem {
     title
     duration
     thumbnail(height: $thumbnailHeight) {
-      ...imageFragment
-      __typename
-    }
-    backgroundImage(width: $backgroundWidth, height: $backgroundHeight) {
       ...imageFragment
       __typename
     }
@@ -129,17 +151,10 @@ fragment ContentItemFragment on ContentItem {
   ... on VODProduct {
     ...cacheInfoFragment
     title
-    fullDescription
     thumbnail(height: $thumbnailHeight) {
       ...imageFragment
       __typename
     }
-    backgroundImage(width: $backgroundWidth, height: $backgroundHeight) {
-      ...imageFragment
-      __typename
-    }
-    actors
-    directors
     productParentalRating: parentalRating {
       ...parentalRatingFragment
       __typename
@@ -184,6 +199,10 @@ fragment ContentItemFragment on ContentItem {
         blocked
         __typename
       }
+      parentalRating {
+        ...parentalRatingFragment
+        __typename
+      }
       __typename
     }
     __typename
@@ -212,6 +231,10 @@ fragment ContentItemFragment on ContentItem {
         blocked
         __typename
       }
+      parentalRating {
+        ...parentalRatingFragment
+        __typename
+      }
       __typename
     }
     event {
@@ -231,6 +254,7 @@ fragment ContentItemFragment on ContentItem {
         catchupTV
         restartTV
         catchupTVAvailableUntil
+        ppvTV
         __typename
       }
       __typename
@@ -242,6 +266,7 @@ fragment ContentItemFragment on ContentItem {
     title
     start
     end
+    ppv
     startOverTVBeforeTime
     startOverTVAfterTime
     thumbnail(height: $thumbnailHeight) {
@@ -256,20 +281,11 @@ fragment ContentItemFragment on ContentItem {
       catchupTV
       restartTV
       catchupTVAvailableUntil
+      ppvTV
       __typename
     }
     personalEventInfo: personalInfo(profileId: $profileId) {
       ...cacheInfoFragment
-      recordings(kindFilter: NETWORK) {
-        ... on NetworkRecording {
-          id
-          status
-          start
-          end
-          __typename
-        }
-        __typename
-      }
       bookmark {
         ...cacheInfoFragment
         position
@@ -286,6 +302,10 @@ fragment ContentItemFragment on ContentItem {
       personalInfo(profileId: $profileId) {
         ...cacheInfoFragment
         blocked
+        __typename
+      }
+      parentalRating {
+        ...parentalRatingFragment
         __typename
       }
       __typename

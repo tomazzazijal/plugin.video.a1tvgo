@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.mtelnow"
-       name="A1 Xplore TV GO"
-       version="2.0.0"
-       provider-name="Johnie">
+<addon id="plugin.video.a1tvgo"
+       name="A1 Xplore TV"
+       version="1.0.0"
+       provider-name="markop159">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="inputstream.adaptive" version="2.1.0"/>
@@ -15,11 +15,11 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>https://a1xploretv.bg</summary>
-    <description lang="bg">Преди употреба, въведете акаунта си в настройките!</description>
+    <summary>https://xploretv.si</summary>
+    <description lang="si">Pred uporabo nastavite vašega uporabnika v addon nastavitvah!</description>
     <description lang="en">Before use, set your account in the addon settings!</description>
-    <disclaimer lang="en">This is not an official addon! If the official APP is available for your platform, use it instead of this addon. All rights on content are reserved by A1 Bulgaria.</disclaimer>
-  	<disclaimer lang="bg">Това не е официална приставка! Ако официално приложение е достъпно за вашата платформа, използвайте него вместо тази приставка. Всички права върху съдържанието са запазени от A1 България.</disclaimer>
+    <disclaimer lang="en">This is not an official addon!</disclaimer>
+  	<disclaimer lang="si">To ni uradni dodatek!.</disclaimer>
     <platform>all</platform>
 	<assets>
 	   <icon>resources/icon.png</icon>

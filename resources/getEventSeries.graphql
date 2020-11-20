@@ -1,0 +1,392 @@
+query getEventSeries($profileId: ID!, $seriesId: ID!, $backgroundWidth: Int!, $backgroundHeight: Int!, $thumbnailHeight: Int!, $channelLogoWidth: Int!, $channelLogoHeight: Int!, $channelLogoFlavour: ImageFlavour!, $parentalRatingIconWidth: Int!, $parentalRatingIconHeight: Int!) {
+  series(id: $seriesId) {
+    id
+    expiry
+    __typename
+    title
+    episodeCount
+    channel {
+      ...channelFragment
+      userInfo {
+        id
+        subscribed
+        __typename
+      }
+      personalInfo(profileId: $profileId) {
+        id
+        blocked
+        __typename
+      }
+      parentalRating {
+        ...parentalRatingFragment
+        __typename
+      }
+      __typename
+    }
+    activeEpisode(profileId: $profileId) {
+      edge {
+        ...cacheInfoFragment
+        node {
+          ...cacheInfoFragment
+          __typename
+        }
+        __typename
+      }
+      groupId
+      __typename
+    }
+    content {
+      ...eventSerieContentFragment
+      __typename
+    }
+    parentalRating {
+      ...parentalRatingFragment
+      __typename
+    }
+  }
+}
+
+fragment channelFragment on Channel {
+  ...cacheInfoFragment
+  title
+  kind
+  logo(width: $channelLogoWidth, height: $channelLogoHeight, flavour: $channelLogoFlavour) {
+    ...imageFragment
+    __typename
+  }
+  beforeTime
+  afterTime
+  personalInfo(profileId: $profileId) {
+    ...cacheInfoFragment
+    blocked
+    __typename
+  }
+  parentalRating {
+    ...cacheInfoFragment
+    adult
+    rank
+    __typename
+  }
+  __typename
+}
+
+fragment cacheInfoFragment on Cacheable {
+  __typename
+  id
+  expiry
+}
+
+fragment imageFragment on Image {
+  ...cacheInfoFragment
+  url
+  width
+  height
+  __typename
+}
+
+fragment parentalRatingFragment on ParentalRating {
+  ...cacheInfoFragment
+  title
+  description
+  rank
+  adult
+  __typename
+}
+
+fragment eventSerieContentFragment on ContentFolder {
+  ...cacheInfoFragment
+  firstItems: items {
+    totalCount
+    pageInfo {
+      ...pageInfoFragment
+      __typename
+    }
+    edges {
+      id
+      cursor
+      node {
+        ...eventSerieItemFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  lastItems: items {
+    totalCount
+    pageInfo {
+      ...pageInfoFragment
+      __typename
+    }
+    edges {
+      id
+      cursor
+      node {
+        ...eventSerieItemFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment pageInfoFragment on PageInfo {
+  hasNextPage
+  hasPreviousPage
+  startCursor
+  endCursor
+  __typename
+}
+
+fragment eventSerieItemFragment on ContentItem {
+  ... on Event {
+    ...cacheInfoFragment
+    title
+    start
+    end
+    blackout
+    startOverTVBeforeTime
+    startOverTVAfterTime
+    ppv
+    thumbnail(height: $thumbnailHeight) {
+      ...imageFragment
+      __typename
+    }
+    parentalRating {
+      ...cacheInfoFragment
+      title
+      description
+      rank
+      adult
+      icon(width: $parentalRatingIconWidth, height: $parentalRatingIconHeight) {
+        ...cacheInfoFragment
+        url
+        __typename
+      }
+      __typename
+    }
+    channel {
+      id
+      __typename
+    }
+    eventMetadata: metadata {
+      ...cacheInfoFragment
+      title
+      originalTitle
+      country
+      year
+      fullDescription
+      genre {
+        ...cacheInfoFragment
+        title
+        __typename
+      }
+      seriesInfo {
+        ...cacheInfoFragment
+        title
+        __typename
+      }
+      episodeInfo {
+        ...cacheInfoFragment
+        number
+        title
+        season
+        __typename
+      }
+      actors
+      directors
+      ratings {
+        ...cacheInfoFragment
+        value
+        name
+        __typename
+      }
+      __typename
+    }
+    eventEntitlements: entitlements {
+      ...eventEntitlementsFragment
+      __typename
+    }
+    personalEventInfo: personalInfo(profileId: $profileId) {
+      ...personalEventInfoFragment
+      favourited
+      __typename
+    }
+    __typename
+  }
+  ... on Recording {
+    ... on NetworkRecording {
+      ...cacheInfoFragment
+      start
+      end
+      status
+      availableUntil
+      deleteProtected
+      personalRecordingInfo: personalInfo(profileId: $profileId) {
+        ...personalRecordingInfoFragment
+        favourited
+        __typename
+      }
+      size
+      event {
+        ...cacheInfoFragment
+        ...eventInfoBasicFragment
+        parentalRating {
+          ...cacheInfoFragment
+          title
+          description
+          rank
+          adult
+          icon(width: $parentalRatingIconWidth, height: $parentalRatingIconHeight) {
+            ...cacheInfoFragment
+            url
+            __typename
+          }
+          __typename
+        }
+        channel {
+          id
+          __typename
+        }
+        eventMetadata: metadata {
+          ...cacheInfoFragment
+          title
+          originalTitle
+          country
+          year
+          fullDescription
+          genre {
+            ...cacheInfoFragment
+            title
+            __typename
+          }
+          seriesInfo {
+            ...cacheInfoFragment
+            title
+            __typename
+          }
+          episodeInfo {
+            ...cacheInfoFragment
+            number
+            title
+            season
+            __typename
+          }
+          actors
+          directors
+          ratings {
+            ...cacheInfoFragment
+            value
+            name
+            __typename
+          }
+          __typename
+        }
+        eventEntitlements: entitlements {
+          ...eventEntitlementsFragment
+          __typename
+        }
+        personalEventInfo: personalInfo(profileId: $profileId) {
+          ...personalEventInfoFragment
+          favourited
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment eventEntitlementsFragment on EventEntitlements {
+  pauseLiveTV
+  restartTV
+  catchupTV
+  catchupTVAvailableUntil
+  networkRecording
+  networkRecordingPlannableUntil
+  ppvTV
+  needsConcurrencyToken
+  __typename
+}
+
+fragment personalEventInfoFragment on PersonalEventInfo {
+  ...cacheInfoFragment
+  recordings(kindFilter: NETWORK) {
+    ... on NetworkRecording {
+      id
+      start
+      end
+      status
+      availableUntil
+      channel {
+        ...cacheInfoFragment
+        title
+        kind
+        parentalRating {
+          ...parentalRatingFragment
+          __typename
+        }
+        __typename
+      }
+      personalRecordingInfo: personalInfo(profileId: $profileId) {
+        ...personalRecordingInfoFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  bookmark {
+    ...bookmarkFragment
+    __typename
+  }
+  __typename
+}
+
+fragment bookmarkFragment on Bookmark {
+  ...cacheInfoFragment
+  position
+  audio
+  subtitle
+  __typename
+}
+
+fragment personalRecordingInfoFragment on PersonalRecordingInfo {
+  bookmark {
+    ...cacheInfoFragment
+    position
+    __typename
+  }
+  partOfSeriesRecording
+  seasonCancelled
+  seriesCancelled
+  __typename
+}
+
+fragment eventInfoBasicFragment on Event {
+  title
+  start
+  end
+  blackout
+  startOverTVBeforeTime
+  startOverTVAfterTime
+  ppv
+  thumbnail(height: $thumbnailHeight) {
+    ...imageFragment
+    __typename
+  }
+  parentalRating {
+    ...parentalRatingFragment
+    __typename
+  }
+  backgroundImage(width: $backgroundWidth, height: $backgroundHeight) {
+    ...imageFragment
+    __typename
+  }
+  __typename
+}

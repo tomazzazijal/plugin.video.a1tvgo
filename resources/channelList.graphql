@@ -1,4 +1,4 @@
-query channelList($firstChannels: Int, $channelListId: ID!, $after: String, $currentTime: Date!, $thumbnailHeight: Int!, $backgroundHeight: Int!, $backgroundWidth: Int!, $shortDescriptionMaxLength: Int!) {
+query channelList($profileId: ID!, $firstChannels: Int, $channelListId: ID!, $after: String, $currentTime: Date!, $thumbnailHeight: Int!, $backgroundHeight: Int!, $backgroundWidth: Int!) {
   channelList(id: $channelListId) {
     ...cacheInfoFragment
     name
@@ -25,6 +25,11 @@ query channelList($firstChannels: Int, $channelListId: ID!, $after: String, $cur
             subscribed
             __typename
           }
+          personalInfo(profileId: $profileId) {
+            ...cacheInfoFragment
+            blocked
+            __typename
+          }
           currentEvent: eventsAt(time: $currentTime, previous: 0, following: 0) {
             ...cacheInfoFragment
             itemCount
@@ -42,30 +47,6 @@ query channelList($firstChannels: Int, $channelListId: ID!, $after: String, $cur
     }
     __typename
   }
-}
-
-fragment nowPlayingEventFragment on Event {
-  ...cacheInfoFragment
-  ...eventInfoBasicFragment
-  eventEntitlements: entitlements {
-    ...eventEntitlementsFragment
-    __typename
-  }
-  eventMetadata: metadata {
-    ...metadataExtendedFragment
-    __typename
-  }
-  __typename
-}
-
-fragment eventEntitlementsFragment on EventEntitlements {
-  pauseLiveTV
-  restartTV
-  catchupTV
-  catchupTVAvailableUntil
-  networkRecording
-  networkRecordingPlannableUntil
-  __typename
 }
 
 fragment pageInfoFragment on PageInfo {
@@ -90,37 +71,15 @@ fragment imageFragment on Image {
   __typename
 }
 
-fragment metadataExtendedFragment on Metadata {
+fragment nowPlayingEventFragment on Event {
   ...cacheInfoFragment
-  title
-  originalTitle
-  shortDescription(maxLength: $shortDescriptionMaxLength)
-  country
-  year
-  fullDescription
-  genre {
-    ...cacheInfoFragment
-    title
+  ...eventInfoBasicFragment
+  eventEntitlements: entitlements {
+    ...eventEntitlementsFragment
     __typename
   }
-  seriesInfo {
-    ...cacheInfoFragment
-    title
-    __typename
-  }
-  episodeInfo {
-    ...cacheInfoFragment
-    number
-    title
-    season
-    __typename
-  }
-  actors
-  directors
-  ratings {
-    ...cacheInfoFragment
-    value
-    name
+  personalEventInfo: personalInfo(profileId: $profileId) {
+    ...personalEventInfoFragment
     __typename
   }
   __typename
@@ -133,6 +92,7 @@ fragment eventInfoBasicFragment on Event {
   blackout
   startOverTVBeforeTime
   startOverTVAfterTime
+  ppv
   thumbnail(height: $thumbnailHeight) {
     ...imageFragment
     __typename
@@ -148,14 +108,6 @@ fragment eventInfoBasicFragment on Event {
   __typename
 }
 
-fragment imageFragment on Image {
-  ...cacheInfoFragment
-  url
-  width
-  height
-  __typename
-}
-
 fragment parentalRatingFragment on ParentalRating {
   ...cacheInfoFragment
   title
@@ -165,3 +117,68 @@ fragment parentalRatingFragment on ParentalRating {
   __typename
 }
 
+fragment eventEntitlementsFragment on EventEntitlements {
+  pauseLiveTV
+  restartTV
+  catchupTV
+  catchupTVAvailableUntil
+  networkRecording
+  networkRecordingPlannableUntil
+  ppvTV
+  needsConcurrencyToken
+  __typename
+}
+
+fragment personalEventInfoFragment on PersonalEventInfo {
+  ...cacheInfoFragment
+  recordings(kindFilter: NETWORK) {
+    ... on NetworkRecording {
+      id
+      start
+      end
+      status
+      availableUntil
+      channel {
+        ...cacheInfoFragment
+        title
+        kind
+        parentalRating {
+          ...parentalRatingFragment
+          __typename
+        }
+        __typename
+      }
+      personalRecordingInfo: personalInfo(profileId: $profileId) {
+        ...personalRecordingInfoFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  bookmark {
+    ...bookmarkFragment
+    __typename
+  }
+  __typename
+}
+
+fragment bookmarkFragment on Bookmark {
+  ...cacheInfoFragment
+  position
+  audio
+  subtitle
+  __typename
+}
+
+fragment personalRecordingInfoFragment on PersonalRecordingInfo {
+  bookmark {
+    ...cacheInfoFragment
+    position
+    __typename
+  }
+  partOfSeriesRecording
+  seasonCancelled
+  seriesCancelled
+  __typename
+}

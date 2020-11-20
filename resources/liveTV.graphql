@@ -1,8 +1,8 @@
-query liveTV($channelAfterCursor: String, $currentTime: Date!, $logoWidth: Int!, $logoHeight: Int!, $thumbnailHeight: Int!, $backgroundHeight: Int!, $backgroundWidth: Int!, $channelListId: ID!, $shortDescriptionMaxLength: Int!) {
+query liveTV($profileId: ID!, $channelAfterCursor: String, $firstChannels: Int!, $currentTime: Date!, $logoWidth: Int!, $logoHeight: Int!, $logoFlavour: ImageFlavour, $thumbnailHeight: Int!, $backgroundHeight: Int!, $backgroundWidth: Int!, $channelListId: ID!) {
   channelList(id: $channelListId) {
     ...cacheInfoFragment
     name
-    channels(after: $channelAfterCursor) {
+    channels(first: $firstChannels, after: $channelAfterCursor) {
       ...cacheInfoFragment
       totalCount
       pageInfo {
@@ -15,13 +15,24 @@ query liveTV($channelAfterCursor: String, $currentTime: Date!, $logoWidth: Int!,
         cursor
         node {
           ...cacheInfoFragment
+          parentalRating {
+            ...cacheInfoFragment
+            rank
+            adult
+            __typename
+          }
           title
           userInfo {
             ...cacheInfoFragment
             subscribed
             __typename
           }
-          logo(width: $logoWidth, height: $logoHeight) {
+          personalInfo(profileId: $profileId) {
+            ...cacheInfoFragment
+            blocked
+            __typename
+          }
+          logo(width: $logoWidth, height: $logoHeight, flavour: $logoFlavour) {
             ...cacheInfoFragment
             url
             __typename
@@ -58,8 +69,8 @@ fragment nowPlayingEventFragment on Event {
     ...eventEntitlementsFragment
     __typename
   }
-  eventMetadata: metadata {
-    ...metadataExtendedFragment
+  personalEventInfo: personalInfo(profileId: $profileId) {
+    ...personalEventInfoFragment
     __typename
   }
   __typename
@@ -72,6 +83,7 @@ fragment eventInfoBasicFragment on Event {
   blackout
   startOverTVBeforeTime
   startOverTVAfterTime
+  ppv
   thumbnail(height: $thumbnailHeight) {
     ...imageFragment
     __typename
@@ -111,41 +123,61 @@ fragment eventEntitlementsFragment on EventEntitlements {
   catchupTVAvailableUntil
   networkRecording
   networkRecordingPlannableUntil
+  ppvTV
+  needsConcurrencyToken
   __typename
 }
 
-fragment metadataExtendedFragment on Metadata {
+fragment personalEventInfoFragment on PersonalEventInfo {
   ...cacheInfoFragment
-  title
-  originalTitle
-  shortDescription(maxLength: $shortDescriptionMaxLength)
-  country
-  year
-  fullDescription
-  genre {
-    ...cacheInfoFragment
-    title
+  recordings(kindFilter: NETWORK) {
+    ... on NetworkRecording {
+      id
+      start
+      end
+      status
+      availableUntil
+      channel {
+        ...cacheInfoFragment
+        title
+        kind
+        parentalRating {
+          ...parentalRatingFragment
+          __typename
+        }
+        __typename
+      }
+      personalRecordingInfo: personalInfo(profileId: $profileId) {
+        ...personalRecordingInfoFragment
+        __typename
+      }
+      __typename
+    }
     __typename
   }
-  seriesInfo {
-    ...cacheInfoFragment
-    title
+  bookmark {
+    ...bookmarkFragment
     __typename
   }
-  episodeInfo {
+  __typename
+}
+
+fragment bookmarkFragment on Bookmark {
+  ...cacheInfoFragment
+  position
+  audio
+  subtitle
+  __typename
+}
+
+fragment personalRecordingInfoFragment on PersonalRecordingInfo {
+  bookmark {
     ...cacheInfoFragment
-    number
-    title
-    season
+    position
     __typename
   }
-  actors
-  directors
-  ratings {
-    ...cacheInfoFragment
-    value
-    name
-    __typename
-  }
+  partOfSeriesRecording
+  seasonCancelled
+  seriesCancelled
   __typename
 }
