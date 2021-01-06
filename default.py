@@ -256,7 +256,6 @@ def indexChannelGuide(args):
                     fanart=event['backgroundImage']['url'],
                     plot=channel['title'] + ' - ' + dt_start.strftime('%Y-%m-%d %H:%M') + ' ' + dt_end.strftime('%H:%M') + "\n" +
                     event['title'] + "\n" +
-                    event['eventMetadata']['genre']['title'] + "\n\n" +
                     event['eventMetadata']['fullDescription'],
                     context_items={'Добави в моя списък': 'favoriteItem,' + str(profile_id) + ',' + str(event['id'])}
             )
