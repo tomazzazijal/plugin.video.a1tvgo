@@ -292,7 +292,6 @@ def indexSeries(args):
                     fanart=event['node']['thumbnail']['url'],
                     plot=event['node']['title'] + ' - ' + dt_start.strftime('%Y-%m-%d %H:%M') + ' ' + dt_end.strftime('%H:%M') + "\n" +
                     event['node']['title'] + "\n" +
-                    event['node']['eventMetadata']['genre']['title'] + "\n\n" +
                     event['node']['eventMetadata']['fullDescription'],
                     context_items={'Daj v Zaznamke': 'favoriteItem,' + str(profile_id) + ',' + str(event['id'])}
             )
