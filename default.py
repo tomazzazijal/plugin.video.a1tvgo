@@ -375,11 +375,11 @@ def playPath(path, title = "", plot=""):
     is_helper = inputstreamhelper.Helper(PROTOCOL, drm=DRM)
     if is_helper.check_inputstream():
         li = xbmcgui.ListItem(path=path)
-	li.setMimeType('application/xml+dash')
-	if PY2:
-	  li.setProperty('inputstreamaddon', is_helper.inputstream_addon)
-	else:
-	  li.setProperty('inputstream', is_helper.inputstream_addon)
+        li.setMimeType('application/xml+dash')
+        if PY2:
+          li.setProperty('inputstreamaddon', is_helper.inputstream_addon)
+        else:
+          li.setProperty('inputstream', is_helper.inputstream_addon)
         li.setProperty('inputstream.adaptive.manifest_type', PROTOCOL)
         li.setProperty('inputstream.adaptive.license_type', DRM)
         if max_bandwidth:
