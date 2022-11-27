@@ -139,7 +139,7 @@ def MainMenu():
 
 # Списък с канали за гледане в реално време
 def indexLiveTV():
-    variables={"profileId":profile_id,"firstChannels":200,"channelListId":"8-7","channelAfterCursor":None,"currentTime":datetime.datetime.utcnow().isoformat()[0:23]+'Z',"logoWidth":76,"logoHeight":28,"thumbnailHeight":280,"backgroundHeight":780,"backgroundWidth":1920}
+    variables={"profileId":profile_id,"firstChannels":200,"channelListId":"8-17267","channelAfterCursor":None,"currentTime":datetime.datetime.utcnow().isoformat()[0:23]+'Z',"logoWidth":76,"logoHeight":28,"thumbnailHeight":280,"backgroundHeight":780,"backgroundWidth":1920}
     res = client.execute(open(resources_path + '/liveTV.graphql').read(), variables=variables)
 
     for channel in res['data']['channelList']['channels']['edges']:
@@ -162,7 +162,7 @@ def indexLiveTV():
 
 # Списък с канали за преглед назад във времето
 def indexChannelList():
-    variables={"profileId":profile_id,"channelListId":"8-7","firstChannels":1000,"after":None,"currentTime":datetime.datetime.utcnow().isoformat()[0:23]+'Z',"thumbnailHeight":280,"backgroundHeight":780,"backgroundWidth":1920,"shortDescriptionMaxLength":0}
+    variables={"profileId":profile_id,"channelListId":"8-17267","firstChannels":1000,"after":None,"currentTime":datetime.datetime.utcnow().isoformat()[0:23]+'Z',"thumbnailHeight":280,"backgroundHeight":780,"backgroundWidth":1920,"shortDescriptionMaxLength":0}
     res = client.execute(open(resources_path + '/channelList.graphql').read(), variables=variables)
 
     for channel in res['data']['channelList']['channels']['edges']:

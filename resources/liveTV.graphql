@@ -84,6 +84,13 @@ fragment eventInfoBasicFragment on Event {
   startOverTVBeforeTime
   startOverTVAfterTime
   ppv
+  channel {
+    id
+    title
+    beforeTime
+    afterTime
+    __typename
+  }
   thumbnail(height: $thumbnailHeight) {
     ...imageFragment
     __typename
@@ -96,11 +103,34 @@ fragment eventInfoBasicFragment on Event {
     ...imageFragment
     __typename
   }
+  metadata {
+    id
+    title
+    originalTitle
+    genre {
+      id
+      title
+      __typename
+    }
+    episodeInfo {
+      id
+      title
+      number
+      season
+      __typename
+    }
+    seriesInfo {
+      id
+      title
+      __typename
+    }
+    __typename
+  }
   __typename
 }
 
 fragment imageFragment on Image {
-  ...cacheInfoFragment
+  id
   url
   width
   height
@@ -137,6 +167,8 @@ fragment personalEventInfoFragment on PersonalEventInfo {
       end
       status
       availableUntil
+      conflictAutoResolution
+      allowArchiving
       channel {
         ...cacheInfoFragment
         title
@@ -171,6 +203,7 @@ fragment bookmarkFragment on Bookmark {
 }
 
 fragment personalRecordingInfoFragment on PersonalRecordingInfo {
+  id
   bookmark {
     ...cacheInfoFragment
     position
@@ -179,5 +212,7 @@ fragment personalRecordingInfoFragment on PersonalRecordingInfo {
   partOfSeriesRecording
   seasonCancelled
   seriesCancelled
+  archived
+  unarchiveUntil
   __typename
 }
