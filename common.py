@@ -33,11 +33,14 @@ else:
 
 device_id = args.get('device_id',[''])[0]
 if not device_id:
-    mac = xbmc.getInfoLabel('Network.MacAddress')
-    while mac == 'Busy':
-        time.sleep(0.5)
+    device_id = xbmcaddon.Addon(id='plugin.video.a1tvgo').getSetting('settings_device_id')
+    if not device_id:
         mac = xbmc.getInfoLabel('Network.MacAddress')
-    device_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, mac))
+        while mac == 'Busy':
+            time.sleep(0.5)
+            mac = xbmc.getInfoLabel('Network.MacAddress')
+        device_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, mac))
+        xbmcaddon.Addon(id='plugin.video.a1tvgo').setSetting('settings_device_id', device_id)
 
 class my_gqlc(GraphQLClient):
     def __init__(self, headers):
