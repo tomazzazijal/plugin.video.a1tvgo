@@ -76,7 +76,7 @@ if not user_id or not session_id or reauth:
             'input':{
                 'clientGeneratedDeviceId': device_id,
                 'deviceType': 'LINUX',
-                'name': 'Kodi on LINUX'
+                'name': xbmc.getInfoLabel('System.FriendlyName')
                 }
             }
         )
@@ -140,6 +140,7 @@ def MainMenu():
 # Списък с канали за гледане в реално време
 def indexLiveTV():
     variables={"profileId":profile_id,"firstChannels":200,"channelListId":"8-17267","channelAfterCursor":None,"currentTime":datetime.datetime.utcnow().isoformat()[0:23]+'Z',"logoWidth":76,"logoHeight":28,"thumbnailHeight":280,"backgroundHeight":780,"backgroundWidth":1920}
+
     res = client.execute(open(resources_path + '/liveTV.graphql').read(), variables=variables)
 
     for channel in res['data']['channelList']['channels']['edges']:
@@ -377,9 +378,9 @@ def playPath(path, title = "", plot=""):
         li = xbmcgui.ListItem(path=path)
         li.setMimeType('application/xml+dash')
         if PY2:
-          li.setProperty('inputstreamaddon', is_helper.inputstream_addon)
+            li.setProperty('inputstreamaddon', is_helper.inputstream_addon)
         else:
-          li.setProperty('inputstream', is_helper.inputstream_addon)
+            li.setProperty('inputstream', is_helper.inputstream_addon)
         li.setProperty('inputstream.adaptive.manifest_type', PROTOCOL)
         li.setProperty('inputstream.adaptive.license_type', DRM)
         if max_bandwidth:
@@ -388,7 +389,7 @@ def playPath(path, title = "", plot=""):
           device_hash = base64.b64encode(device_id)
         else:
           device_hash = base64.b64encode(device_id.encode()).decode()
-        dt_custom_data = 'https://wvps.xploretv.si:8063/?deviceId=' + device_hash
+        dt_custom_data = 'https://wvps.a1xploretv.bg:8063/?deviceId=' + device_hash
         li.setProperty('inputstream.adaptive.license_key', dt_custom_data + '||R{SSM}|')
         #li.setMimeType('application/dash+xml')
         if title and plot:
